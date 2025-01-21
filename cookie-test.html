@@ -1,26 +1,62 @@
-<!-- test-cookie.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Test Cookie</title>
+  <title>Extended Cookie Test</title>
 </head>
 <body>
 <script>
-  // Attempt to set a cookie with SameSite=None; Secure 
-  // so that it's valid in a third-party iframe context (modern browsers require these flags)
-  document.cookie = "bbbCookieTest=1; path=/; SameSite=None; Secure";
+  const testCookies = [
+    {
+      name: 'CookieNoSameSiteNoSecure',
+      attributes: '', 
+      description: 'No SameSite, not Secure',
+    },
+    {
+      name: 'CookieSameSiteStrict',
+      attributes: 'SameSite=Strict', 
+      description: 'SameSite=Strict, no Secure',
+    },
+    {
+      name: 'CookieSameSiteLax',
+      attributes: 'SameSite=Lax',
+      description: 'SameSite=Lax, no Secure',
+    },
+    {
+      name: 'CookieSameSiteNone',
+      attributes: 'SameSite=None', 
+      description: 'SameSite=None, no Secure',
+    },
+    {
+      name: 'CookieSameSiteNoneSecure',
+      attributes: 'SameSite=None; Secure',
+      description: 'SameSite=None; Secure (recommended for cross-site)',
+    },
+  ];
 
-  // Check if the cookie is present
-  const cookieVal = document.cookie || "";
+  testCookies.forEach(({ name, attributes }) => {
+    const cookieString = `${name}=1; path=/; ${attributes}`;
+    document.cookie = cookieString;
+  });
 
-  // Post a message back to the parent window
+  const rawCookies = document.cookie || '';
+
+  const results = {};
+  testCookies.forEach(({ name, description }) => {
+    const wasSet = rawCookies.includes(`${name}=1`);
+    results[name] = {
+      description,
+      wasSet,
+    };
+  });
+
   window.parent.postMessage(
     {
-      cookieTest: "complete",
-      cookieVal: cookieVal
+      cookieTest: 'complete',
+      rawCookies: rawCookies, 
+      results: results,     
     },
-    "*"
+    '*'
   );
 </script>
 </body>
