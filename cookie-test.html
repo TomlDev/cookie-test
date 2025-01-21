@@ -1,0 +1,27 @@
+<!-- test-cookie.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Test Cookie</title>
+</head>
+<body>
+<script>
+  // Attempt to set a cookie with SameSite=None; Secure 
+  // so that it's valid in a third-party iframe context (modern browsers require these flags)
+  document.cookie = "bbbCookieTest=1; path=/; SameSite=None; Secure";
+
+  // Check if the cookie is present
+  const cookieVal = document.cookie || "";
+
+  // Post a message back to the parent window
+  window.parent.postMessage(
+    {
+      cookieTest: "complete",
+      cookieVal: cookieVal
+    },
+    "*"
+  );
+</script>
+</body>
+</html>
